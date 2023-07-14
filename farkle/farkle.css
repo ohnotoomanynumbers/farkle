@@ -98,3 +98,14 @@ body{
 	font-family: arial;
 	padding: 100px;
 }
+
+.player {
+	text-align: center;
+	color: white;
+	font-family: Arial;
+	font-size: 16px;
+}
+
+.invisible {
+	visibility: hidden;
+}

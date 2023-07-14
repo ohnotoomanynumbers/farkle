@@ -1,8 +1,9 @@
 var diceArr = [];
-var playerArr = [];
+var playerArr;
 var hasSelected = false;
 var lastTurn = false;
 var currentPlayer;
+var scores;
 
 
 function startGame() {
@@ -11,16 +12,17 @@ function startGame() {
 	listString = ''
 	for (i = 0; i < number; i++) {
 		playerArr[i] = {}
-		playerArr[i].id = i
+		playerArr[i].id = i	
 		playerArr[i].score = 0
 		listString += '<p id=player' + i + '>Player ' + i + ': ' + playerArr[i].score + '</p>'
 	}
 	currentPlayer = playerArr[0]
 	console.log(currentPlayer)
-	document.getElementById("game_start").style.visibility = 'hidden';
-	document.getElementById("player_info").style.visibility = 'visible';
+	document.getElementById("game_start").classList.toggle('invisible');
+	document.getElementById("player_info").classList.toggle('invisible');
 	lastTurn = false;
 	document.getElementById("player_info").innerHTML = listString
+	updatePlayer()
 }
 
 function initializeDice(){
@@ -41,6 +43,7 @@ function rollDice(){
 	}
 	updateDiceImg();
 	scores = checkScore()
+	document.getElementById("score_display").classList.toggle("invisible")
 	if (scores === 'Farkle!') {
 		document.getElementById("running_score").innerHTML = 0
 		bankScore()
@@ -73,6 +76,18 @@ function diceClick(img){
 }
 
 
+function resetDice() {
+	for (let i = 0; i < 6; i++) {
+		let id = "die" + (i+1)
+		let img = document.getElementById(id)
+		if (diceArr[i].clicked === 1) {
+			diceArr[i].clicked = 0
+			img.classList.toggle("transparent")
+		}
+	}
+}
+
+
 // helper function to get all indices, used for scoring
 function getAllIndexes(arr, val) {
     var indexes = [], i = -1;
@@ -95,7 +110,7 @@ function tripScore(n) {
 /* check current diceArr for scores, then return an array of scores with associated dice that must be clicked to accept or farkle */
 function checkScore() {
 	const values = [];
-	const scores = [];
+	scores = [];
 	// for convenience create an array of available die values at the time checkScore is called with indices matching diceArr
 	for (let i = 0; i < 6; i++) {
 		if (diceArr[i].clicked === 0) {
@@ -158,14 +173,40 @@ function messageUpdate(scores) {
 	scores = consolidateScores(scores)
 	let scoresList = ""
 	for (let score in scores) {
-
-		if (scores[score][1] > 100) {
-			scoresList += "<p class=\"game_score\"><span>Triple " + diceArr[scores[score][0][0]].value + ": " + scores[score][1] + " points</span></p>"
-		} else {
-			scoresList += "<p class=\"game_score\"><span>" + diceArr[scores[score][0][0]].value + ": " + scores[score][1] + " points</span></p>"
-		}
+		scoresList += "<button class=\"game_score\" id=\"game_score" + score + "\" onclick=\"updateRunningScore(this)\">" + scores[score][1] + "</p>"
 	}
 	document.getElementById("scores_list").innerHTML = scoresList
+}
+
+
+
+function updateRunningScore(selection) {
+	let toAdd = parseInt(selection.innerHTML)
+	console.log(toAdd)
+	for (let score in scores) {
+		if (scores[score][1] === toAdd) {
+			var scoreAdd = scores[score]
+		}
+	}
+	if (scoreAdd[1] > 100) {
+		selection.innerHTML
+		for (i = 0; i < 3; i++) {
+			const j = scoreAdd[0][i]
+			const img = document.getElementById("die" + (j+1))
+			img.classList.toggle("transparent");
+			diceArr[j].clicked = 1;	
+		}
+	} else {
+		const j = scoreAdd[0]
+		const img = document.getElementById("die" + (j+1))
+		img.classList.toggle("transparent")
+		diceArr[j].clicked = 1
+	}
+	running_score = parseInt(document.getElementById("running_score").innerHTML)
+	running_score += toAdd
+	console.log(running_score)
+	document.getElementById("running_score").innerHTML = running_score
+	document.getElementById("score_display").classList.toggle("invisible")
 }
 
 
@@ -174,14 +215,13 @@ function bankScore() {
 	total_score = parseInt(document.getElementById("total_score").innerHTML)
 	total_score += running_score
 	currentPlayer.score = total_score
-	document.getElementById("total_score").innerHTML = total_score
 	document.getElementById("running_score").innerHTML = 0
-	// add additional logic for extra players later
-	//turn end logic
+	endTurn()
 }
 
 
 function updatePlayer() {
+	document.getElementById("current_player").innerHTML = "Player " + currentPlayer.id
 	document.getElementById("total_score").innerHTML = currentPlayer.score
 	for (i = 0; i < playerArr.length; i++) {
 		document.getElementById("player" + i).innerHTML = 'Player ' + i + ': ' + playerArr[i].score
@@ -209,6 +249,7 @@ function endTurn() {
 	} else {
 		currentPlayer = playerArr[currentPlayer.id + 1]
 	}
+	resetDice()
 	updatePlayer()
 }
 

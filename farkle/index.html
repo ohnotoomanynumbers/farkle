@@ -2,7 +2,7 @@
 <html>
 <head>
 	<link rel="stylesheet" type="text/css" href="farkle.css">
-	<script type="text/javascript" src="farkle.js"></script>
+	<script type="text/javascript" src="farkle.js" defer></script>
 	<title>Farkle!</title>
 </head>
 
@@ -20,28 +20,31 @@
 			<img src="images/6.png" id="die6" data-number="5" onclick="diceClick(this)">
 		</div>
 	</div>
+
+	<div class="player" id="current_player"></div>
 	<!-- Scoring -->
-	<div class="row score" id="running_score"> 200 </div>
+	<div class="row score" id="running_score"> 0 </div>
 	<div class="row score" id="total_score"> 0 </div>
 
 	<!-- Button row -->
 	<div class="row">
-		<button class="button roll column" onclick="rollDice()">Roll Dice</button>
+		<button class="button roll column" id="roll_button" onclick="rollDice()">Roll Dice</button>
 		<button class="button bank column" onclick="bankScore()">Bank Score</button>
 	</div>
 	</div>
 	<!-- Messages -->
-	<div class="messages">
+	<div class="messages invisible" id="score_display">
 		<h2 id="score_header"></h2>
 		<div id="scores_list"></div>
 	</div>
-	<div class="playerinfo" id="game_start" style="visibility: visible">
-		<form onsubmit="startGame()">
-			<label for="amount">How many players?</label>
-			<input type="number" name="amount" id="amount" min="1" max="5">
-		</form>
+	<div class="playerinfo" id="game_start">
+		<label for="amount">How many players?</label>
+		<br>
+		<input type="number" name="amount" id="amount" min="1" max="5">
+		<br>
+		<button name="startbutton" id="startbutton" type="button" onclick="startGame()">Start Game</button>
 	</div>
-	<div class="playerinfo" id="player_info" style="visibility: hidden">
+	<div class="playerinfo invisible" id="player_info">
 		
 	</div>
 </body>
